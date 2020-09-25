@@ -8,6 +8,12 @@ import random
 import argparse
 import numpy as np
 import datetime
+# from https://stackoverflow.com/a/6209894/5728815
+import inspect
+import os
+filename = inspect.getframeinfo(inspect.currentframe()).filename
+path = os.path.dirname(os.path.abspath(filename))
+#print(path)
 
 # Difficulty flags
 DIFFICULTIES = EASY, MEDIUM, HARD, VERYHARD = 'e', 'm', 'h', 'v'
@@ -126,7 +132,7 @@ def generate_clock():
 	# We've got the parameters: los geht's!
 	cwidth = cheight = width // ncols
 	r = cwidth * 0.49
-	with open('time.svg', 'w') as fo:
+	with open(path + "/time.svg", 'w') as fo:
 		preamble(fo)
 		for i, time in enumerate(times):
 			#print('{:2d}:{:02d}'.format(*[int(s) for s in time.split(':')]))

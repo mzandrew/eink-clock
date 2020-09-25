@@ -20,6 +20,12 @@ resolution = PythonMagick.Geometry(400, 300)
 import time
 import datetime
 #composite -size 400x300 -resize 400x300 -gravity center time.svg canvas:white time.png
+# from https://stackoverflow.com/a/6209894/5728815
+import inspect
+import os
+filename = inspect.getframeinfo(inspect.currentframe()).filename
+path = os.path.dirname(os.path.abspath(filename))
+#print(path)
 
 #while /bin/true; do ./clock.py ; sleep 60; done
 
@@ -29,15 +35,15 @@ def once():
 	image.size(resolution)
 	image.read("canvas:white")
 	gravity_center = PythonMagick.GravityType(PythonMagick.GravityType.CenterGravity)
-	clockface = PythonMagick.Image("time.svg")
+	clockface = PythonMagick.Image(path + "/time.svg")
 	image.composite(clockface, gravity_center)
 	image.pixelColor(200, 150, "red")
 	#convert time.png -map palette.png output.png
-	palette = PythonMagick.Image("palette.png")
+	palette = PythonMagick.Image(path + "/palette.png")
 	image.map(palette)
-	image.write("output.png")
+	image.write(path + "/output.png")
 	img = Image.new("P", (inky_display.WIDTH, inky_display.HEIGHT))
-	img = Image.open("output.png")
+	img = Image.open(path + "/output.png")
 	inky_display.set_image(img)
 	inky_display.show()
 
