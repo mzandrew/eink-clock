@@ -129,7 +129,7 @@ def generate_clock():
 	with open('time.svg', 'w') as fo:
 		preamble(fo)
 		for i, time in enumerate(times):
-			print('{:2d}:{:02d}'.format(*[int(s) for s in time.split(':')]))
+			#print('{:2d}:{:02d}'.format(*[int(s) for s in time.split(':')]))
 			cy = (i // ncols) * cwidth + cwidth // 2
 			cx = (i % ncols) * cheight + cheight // 2
 			add_clock(fo, cx, cy, r, time)
