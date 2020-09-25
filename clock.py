@@ -48,6 +48,6 @@ def run():
 		time.sleep(sleeptime)
 		once()
 
-#once()
+once()
 run()
 
