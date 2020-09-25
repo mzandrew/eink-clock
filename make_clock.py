@@ -1,9 +1,13 @@
 # from https://scipython.com/blog/generating-an-svg-clock-face/
+# modified to be called as a python function by mza
+# modified to tweak the format by mza
+# last updated 2020-09-08 by mza
 
 import sys
 import random
 import argparse
 import numpy as np
+import datetime
 
 # Difficulty flags
 DIFFICULTIES = EASY, MEDIUM, HARD, VERYHARD = 'e', 'm', 'h', 'v'
@@ -24,8 +28,8 @@ def preamble(fo):
 		  '	  font-family:Arial,Helvetica;font-size: 20pt;'
 		  '	  font-weight: bold;}', file=fo)
 	print('text.min-labels {font-size: 14pt; font-weight: normal;}', file=fo)
-	print('line.mn-hand {stroke-width: 4px; stroke: #f00;}', file=fo)
-	print('line.hr-hand {stroke-width: 12px; stroke: #000;}', file=fo)
+	print('line.mn-hand {stroke-width: 5px; stroke: #000;}', file=fo)
+	print('line.hr-hand {stroke-width: 10px; stroke: #000;}', file=fo)
 	print("""]]></style>
 	</defs>""", file=fo)
 
@@ -45,18 +49,18 @@ def make_clock_face(fo, cx, cy, r):
 		if mn // 5 > hr:
 			# This tick is an hour tick so it's a bit longer
 			hr += 1 
-			xt, yt = (r-40)*x + cx, (r-40)*y + cy
+			xt, yt = (r-30)*x + cx, (r-30)*y + cy
 			print('<text x="{}" y="{}">{}</text>'.format(xt,yt,str(hr+1)),
 				  file=fo)
 			if min_ticks and min_ticklabels:
 				xt, yt = (r+20)*x + cx, (r+20)*y + cy
 				print('<text x="{}" y="{}" class="min-labels">{}</text>'
 					  .format(xt,yt,str((hr+1)*5 % 60)), file=fo)
-			add_tick(x, y, 20)
+			add_tick(x, y, 10)
 			continue
 		if min_ticks:
 			# A regular minute tick
-			add_tick(x, y, 10)
+			add_tick(x, y, 5)
 	print('<circle cx="{}" cy="{}" r="10" class="centre-circ"/>'.format(cx, cy), file=fo)
 
 def add_clock_hands(fo, cx, cy, r, time):
@@ -75,10 +79,10 @@ def add_clock_hands(fo, cx, cy, r, time):
 	# hours
 	th = np.pi/6 * hr - np.pi/2 + mn / 60 * np.pi / 6
 	x, y = np.cos(th), np.sin(th)
-	x2, y2 = r*0.5*x + cx, r*0.5*y + cy
+	x2, y2 = r*0.45*x + cx, r*0.45*y + cy
 	hand_line(x2, y2, 'hr-hand')
 
-def add_clock(cx, cy, r, time):
+def add_clock(fo, cx, cy, r, time):
 	"""Add a clock indicating the given time centred at cx,cy."""
 	add_clock_hands(fo, cx, cy, r, time)
 	make_clock_face(fo, cx, cy, r)
@@ -111,29 +115,48 @@ parser.add_argument('-T', '--no-minute-ticks', dest='no_min_ticks',
 parser.add_argument('-L', '--no-minute-ticklabels', dest='no_min_ticklabels',
 	help='Suppress minute tick labels around the outside of the clock',
 	default=False, action='store_true')
-args = parser.parse_args()
-min_ticks = not args.no_min_ticks
-min_ticklabels = not args.no_min_ticklabels
-n = args.n
-assert n in (1, 2, 4, 6)
-ncols = 1
-if n > 2:
-	ncols = 2
-nrows = n // ncols
-difficulty = args.difficulty
-times = get_random_times(n, difficulty)
 
-# We've got the parameters: los geht's!
-width = 800
-height = 800 * nrows // ncols
-cwidth = cheight = width // ncols
-r = cwidth * 0.4
-with open('time.svg', 'w') as fo:
-	preamble(fo)
-	for i, time in enumerate(times):
-		print('{:2d}:{:02d}'.format(*[int(s) for s in time.split(':')]))
-		cy = (i // ncols) * cwidth + cwidth // 2
-		cx = (i % ncols) * cheight + cheight // 2
-		add_clock(cx, cy, r, time)
-	print('</svg>', file=fo)
+def generate_clock():
+	# https://stackoverflow.com/a/30071999/5728815
+	now = datetime.datetime.now()
+	hr = now.hour % 12
+	if 0==hr:
+		hr = 12
+	times = [ '{}:{}'.format(hr, now.minute) ]
+	# We've got the parameters: los geht's!
+	cwidth = cheight = width // ncols
+	r = cwidth * 0.49
+	with open('time.svg', 'w') as fo:
+		preamble(fo)
+		for i, time in enumerate(times):
+			print('{:2d}:{:02d}'.format(*[int(s) for s in time.split(':')]))
+			cy = (i // ncols) * cwidth + cwidth // 2
+			cx = (i % ncols) * cheight + cheight // 2
+			add_clock(fo, cx, cy, r, time)
+		print('</svg>', file=fo)
+
+# set defaults:
+min_ticks = 1
+min_ticklabels = 0
+n = 1
+nrows = 1
+ncols = 1
+difficulty = ""
+width = 300
+height = 300
+
+if __name__ == "__main__":
+	args = parser.parse_args()
+	min_ticks = not args.no_min_ticks
+	min_ticklabels = not args.no_min_ticklabels
+	n = args.n
+	assert n in (1, 2, 4, 6)
+	ncols = 1
+	if n > 2:
+		ncols = 2
+	nrows = n // ncols
+	difficulty = args.difficulty
+	height = 300 * nrows // ncols
+	times = get_random_times(n, difficulty)
+	generate_clock()
 
