@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # written 2020-09-07 by mza
-# last updated 2020-09-25 by mza
+# last updated 2020-10-15 by mza
 
 # https://learn.pimoroni.com/tutorial/sandyj/getting-started-with-inky-phat
 from inky import InkyWHAT
@@ -9,6 +9,8 @@ from inky import InkyWHAT
 inky_display = InkyWHAT("black")
 inky_display.set_border(inky_display.WHITE)
 #inky_display.show()
+width = 400
+height = 300
 
 #img = Image.open("x.png")
 #img = Image.open("time.png")
@@ -16,7 +18,7 @@ inky_display.set_border(inky_display.WHITE)
 import make_clock
 import PythonMagick # sudo apt install -y python3-pythonmagick
 from PIL import Image, ImageFont, ImageDraw
-resolution = PythonMagick.Geometry(400, 300)
+resolution = PythonMagick.Geometry(width, height)
 import time
 import datetime
 #composite -size 400x300 -resize 400x300 -gravity center time.svg canvas:white time.png
@@ -37,7 +39,7 @@ def once():
 	gravity_center = PythonMagick.GravityType(PythonMagick.GravityType.CenterGravity)
 	clockface = PythonMagick.Image(path + "/time.svg")
 	image.composite(clockface, gravity_center)
-	image.pixelColor(200, 150, "red")
+	image.pixelColor(width//2, height//2, "red")
 	#convert time.png -map palette.png output.png
 	palette = PythonMagick.Image(path + "/palette.png")
 	image.map(palette)
