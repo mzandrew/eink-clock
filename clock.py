@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # written 2020-09-07 by mza
-# last updated 2020-11-21 by mza
+# last updated 2020-11-22 by mza
 
 # https://learn.pimoroni.com/tutorial/sandyj/getting-started-with-inky-phat
 from inky import InkyWHAT
@@ -16,8 +16,8 @@ height = 300
 #img = Image.open("time.png")
 
 import make_clock
-import PythonMagick # sudo apt install -y python3-pythonmagick
-import PIL
+import PythonMagick # sudo apt install -y imagemagick python3-pythonmagick
+import PIL # sudo apt install -y python3-willow
 resolution = PythonMagick.Geometry(width, height)
 import time
 import datetime
