@@ -130,14 +130,19 @@ def generate_clock():
 		hr = 12
 	times = [ '{}:{}'.format(hr, now.minute) ]
 	# We've got the parameters: los geht's!
-	cwidth = cheight = width // ncols
+	if width>height:
+		cwidth = cheight = height // nrows
+	else:
+		cwidth = cheight = width // ncols
 	r = cwidth * 0.49
 	with open(path + "/time.svg", 'w') as fo:
 		preamble(fo)
 		for i, time in enumerate(times):
 			#print('{:2d}:{:02d}'.format(*[int(s) for s in time.split(':')]))
-			cy = (i // ncols) * cwidth + cwidth // 2
-			cx = (i % ncols) * cheight + cheight // 2
+			#cy = (i // ncols) * cwidth + cwidth // 2
+			#cx = (i % ncols) * cheight + cheight // 2
+			cy = (i // ncols) * cwidth + height // 2
+			cx = (i % ncols) * cheight + width // 2
 			add_clock(fo, cx, cy, r, time)
 		print('</svg>', file=fo)
 
@@ -150,6 +155,14 @@ ncols = 1
 difficulty = ""
 width = 300
 height = 300
+
+def set_width(new_width):
+	global width
+	width = new_width
+
+def set_height(new_height):
+	global height
+	height = new_height
 
 if __name__ == "__main__":
 	args = parser.parse_args()
