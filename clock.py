@@ -32,31 +32,38 @@ path = os.path.dirname(os.path.abspath(filename))
 #while /bin/true; do ./clock.py ; sleep 60; done
 make_clock.set_width(width)
 make_clock.set_height(height)
+palette = PythonMagick.Image(path + "/palette.png")
 
-def once():
-	make_clock.generate_clock() # generates an svg file with a clockface of the current time
-	#image = PythonMagick.Image()
+def setup(time = datetime.datetime.now()):
+	#print("")
+	#print(str(datetime.datetime.now()) + " setup(" + str(time) + ")")
+	make_clock.generate_clock(time) # generates an svg file with a clockface of the given time
 	image = PythonMagick.Image(path + "/time.svg")
 	image.size(resolution)
-	#image.read("canvas:white")
-	#clockface = PythonMagick.Image(path + "/time.svg")
-	#image.composite(clockface, PythonMagick.GravityType.CenterGravity, PythonMagick.CompositeOperator.SrcInCompositeOp)
 	image.pixelColor(width//2, height//2, "red")
-	#convert time.png -map palette.png output.png
-	palette = PythonMagick.Image(path + "/palette.png")
 	image.map(palette)
 	image.write(path + "/output.png")
 	img = PIL.Image.new("P", (inky_display.WIDTH, inky_display.HEIGHT))
 	img = PIL.Image.open(path + "/output.png")
 	inky_display.set_image(img)
-	inky_display.show()
+	#print(str(datetime.datetime.now()) + " setup() complete")
+
+def show():
+	#print(str(datetime.datetime.now()) + " show()")
+	inky_display.show() # this takes about 7 seconds for B&W mode
+	#print(str(datetime.datetime.now()) + " show() complete")
+
+def once():
+	setup()
+	show()
 
 def run():
 	while True:
+		setup(datetime.datetime.now() + datetime.timedelta(minutes=1))
 		sleeptime = 60 - datetime.datetime.utcnow().second
 		#print(str(sleeptime))
 		time.sleep(sleeptime)
-		once()
+		show()
 
 once()
 run()

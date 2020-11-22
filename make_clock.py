@@ -122,13 +122,12 @@ parser.add_argument('-L', '--no-minute-ticklabels', dest='no_min_ticklabels',
 	help='Suppress minute tick labels around the outside of the clock',
 	default=False, action='store_true')
 
-def generate_clock():
+def generate_clock(time=datetime.datetime.now()):
 	# https://stackoverflow.com/a/30071999/5728815
-	now = datetime.datetime.now()
-	hr = now.hour % 12
+	hr = time.hour % 12
 	if 0==hr:
 		hr = 12
-	times = [ '{}:{}'.format(hr, now.minute) ]
+	times = [ '{}:{}'.format(hr, time.minute) ]
 	# We've got the parameters: los geht's!
 	if width>height:
 		cwidth = cheight = height // nrows
